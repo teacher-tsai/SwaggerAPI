@@ -1,0 +1,74 @@
+openapi: 3.0.3
+
+info:
+  title: Flask Course Samples & Practice API
+  version: 1.0.0
+  description: |
+    Course API specification for samples and practices.
+    Use Swagger UI to read and try requests.
+
+servers:
+  - url: http://127.0.0.1:5000
+    description: Local Flask server (run on your own machine)
+
+tags:
+  - name: Routing
+    description: Dynamic routing examples
+
+paths:
+
+  /version/{v}:
+    get:
+      tags: [Routing]
+      summary: Version check (float path parameter)
+      description: |
+        Example of dynamic routing with float type.
+        Flask: @app.route("/version/<float:v>")
+      parameters:
+        - name: v
+          in: path
+          required: true
+          description: Current app version (float)
+          schema:
+            type: number
+            format: float
+          example: 1.01
+      responses:
+        "200":
+          description: Version comparison result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionCheckResponse"
+              examples:
+                needUpdate:
+                  value:
+                    current_version: 1.01
+                    latest_version: 2.0
+                    need_update: true
+                upToDate:
+                  value:
+                    current_version: 2.1
+                    latest_version: 2.0
+                    need_update: false
+        "404":
+          description: If v is not a float (route won't match)
+
+components:
+  schemas:
+
+    VersionCheckResponse:
+      type: object
+      properties:
+        current_version:
+          type: number
+          format: float
+        latest_version:
+          type: number
+          format: float
+        need_update:
+          type: boolean
+      required:
+        - current_version
+        - latest_version
+        - need_update
