@@ -15,13 +15,10 @@
   <script>
     window.onload = () => {
       SwaggerUIBundle({
+        url: "./swagger.yaml",   // 你的 spec 檔
         dom_id: "#swagger-ui",
         deepLinking: true,
-
-        urls: [
-          { url: "./swagger.yaml", name: "Course API" },
-          { url: "./practice229.yaml", name: "Task API" }
-        ]
+        persistAuthorization: true
       });
     };
   </script>
