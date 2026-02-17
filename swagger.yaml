@@ -12,17 +12,52 @@ servers:
     description: Local Flask server (run on your own machine)
 
 tags:
-  - name: Routing
-    description: Dynamic routing examples
+  - name: Sample
+    description: Sample endpoints (teacher demo)
+  - name: Practice
+    description: Practice endpoints (student exercises)
 
 paths:
 
+  /price/{price}:
+    get:
+      tags: [Sample]
+      summary: Calculate price with tax (float path parameter)
+      description: |
+        Sample: dynamic routing + JSON response.
+        Flask: @app.route("/price/<float:price>")
+      parameters:
+        - name: price
+          in: path
+          required: true
+          description: Original product price
+          schema:
+            type: number
+            format: float
+          example: 100
+      responses:
+        "200":
+          description: Price calculation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceResponse"
+              examples:
+                sample:
+                  value:
+                    original_price: 100.0
+                    tax_rate: 0.05
+                    tax_amount: 5.0
+                    total_price: 105.0
+        "404":
+          description: If price is not a float (route won't match)
+
   /version/{v}:
     get:
-      tags: [Routing]
+      tags: [Practice]
       summary: Version check (float path parameter)
       description: |
-        Example of dynamic routing with float type.
+        Practice: dynamic routing + condition + JSON response.
         Flask: @app.route("/version/<float:v>")
       parameters:
         - name: v
@@ -32,7 +67,7 @@ paths:
           schema:
             type: number
             format: float
-          example: 1.01
+          example: 1.5
       responses:
         "200":
           description: Version comparison result
@@ -43,19 +78,42 @@ paths:
               examples:
                 needUpdate:
                   value:
-                    current_version: 1.01
+                    current_version: 1.5
                     latest_version: 2.0
                     need_update: true
+                    message: "Please update to the latest version"
                 upToDate:
                   value:
                     current_version: 2.1
                     latest_version: 2.0
                     need_update: false
+                    message: "Latest Version"
         "404":
           description: If v is not a float (route won't match)
 
 components:
   schemas:
+
+    PriceResponse:
+      type: object
+      properties:
+        original_price:
+          type: number
+          format: float
+        tax_rate:
+          type: number
+          format: float
+        tax_amount:
+          type: number
+          format: float
+        total_price:
+          type: number
+          format: float
+      required:
+        - original_price
+        - tax_rate
+        - tax_amount
+        - total_price
 
     VersionCheckResponse:
       type: object
@@ -68,7 +126,10 @@ components:
           format: float
         need_update:
           type: boolean
+        message:
+          type: string
       required:
         - current_version
         - latest_version
         - need_update
+        - message
