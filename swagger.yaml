@@ -22,19 +22,14 @@ paths:
   /price/{price}:
     get:
       tags: [Sample]
-      summary: Calculate price with tax (float path parameter)
-      description: |
-        Sample: dynamic routing + JSON response.
-        Flask: @app.route("/price/<float:price>")
+      summary: Calculate price with tax
       parameters:
         - name: price
           in: path
           required: true
-          description: Original product price
           schema:
             type: number
             format: float
-          example: 100
       responses:
         "200":
           description: Price calculation result
@@ -42,32 +37,174 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PriceResponse"
-              examples:
-                sample:
-                  value:
-                    original_price: 100.0
-                    tax_rate: 0.05
-                    tax_amount: 5.0
-                    total_price: 105.0
-        "404":
-          description: If price is not a float (route won't match)
+
+  /method-demo:
+    get:
+      tags: [Sample]
+      summary: Show HTTP method (GET)
+      responses:
+        "200":
+          description: Method result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  method:
+                    type: string
+
+    post:
+      tags: [Sample]
+      summary: Show HTTP method (POST)
+      responses:
+        "200":
+          description: Method result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  method:
+                    type: string
+
+  /search:
+    get:
+      tags: [Sample]
+      summary: Query string example
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Search result
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /add:
+    post:
+      tags: [Sample]
+      summary: Add two numbers (JSON body)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                a:
+                  type: number
+                b:
+                  type: number
+              required: [a, b]
+      responses:
+        "200":
+          description: Add result
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /login:
+    post:
+      tags: [Sample]
+      summary: Form data example
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login form result
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /headers:
+    get:
+      tags: [Sample]
+      summary: Show request headers
+      responses:
+        "200":
+          description: Header info
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /path-demo:
+    get:
+      tags: [Sample]
+      summary: Show request path
+      responses:
+        "200":
+          description: Path info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+
+  /url-demo:
+    get:
+      tags: [Sample]
+      summary: Show full request URL
+      responses:
+        "200":
+          description: URL info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+
+  /ip:
+    get:
+      tags: [Sample]
+      summary: Show client IP
+      responses:
+        "200":
+          description: IP info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  client_ip:
+                    type: string
 
   /version/{v}:
     get:
       tags: [Practice]
       summary: Version check (float path parameter)
-      description: |
-        Practice: dynamic routing + condition + JSON response.
-        Flask: @app.route("/version/<float:v>")
       parameters:
         - name: v
           in: path
           required: true
-          description: Current app version (float)
           schema:
             type: number
             format: float
-          example: 1.5
       responses:
         "200":
           description: Version comparison result
@@ -75,21 +212,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VersionCheckResponse"
-              examples:
-                needUpdate:
-                  value:
-                    current_version: 1.5
-                    latest_version: 2.0
-                    need_update: true
-                    message: "Please update to the latest version"
-                upToDate:
-                  value:
-                    current_version: 2.1
-                    latest_version: 2.0
-                    need_update: false
-                    message: "Latest Version"
-        "404":
-          description: If v is not a float (route won't match)
 
 components:
   schemas:
@@ -99,37 +221,21 @@ components:
       properties:
         original_price:
           type: number
-          format: float
         tax_rate:
           type: number
-          format: float
         tax_amount:
           type: number
-          format: float
         total_price:
           type: number
-          format: float
-      required:
-        - original_price
-        - tax_rate
-        - tax_amount
-        - total_price
 
     VersionCheckResponse:
       type: object
       properties:
         current_version:
           type: number
-          format: float
         latest_version:
           type: number
-          format: float
         need_update:
           type: boolean
         message:
           type: string
-      required:
-        - current_version
-        - latest_version
-        - need_update
-        - message
