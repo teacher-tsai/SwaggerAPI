@@ -342,6 +342,68 @@ paths:
               examples:
                 notFound:
                   value: { error: "Task not found" }
+    put:
+      tags: [Task API]
+      summary: Update task by ID
+      description: Update an existing task using JSON body.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdateRequest"
+            examples:
+              sample:
+                value: { title: "Study Flask", completed: true }
+      responses:
+        "200":
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              examples:
+                updated:
+                  value: { id: 1, title: "Study Flask", completed: true }
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notFound:
+                  value: { error: "Task not found" }
+    delete:
+      tags: [Task API]
+      summary: Delete task by ID
+      description: Delete an existing task.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        "204":
+          description: Task deleted successfully
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notFound:
+                  value: { error: "Task not found" }
 
 components:
   schemas:
@@ -487,6 +549,13 @@ components:
         title:
           type: string
       required: [title]
+    TaskUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        completed:
+          type: boolean
 
     ErrorResponse:
       type: object
