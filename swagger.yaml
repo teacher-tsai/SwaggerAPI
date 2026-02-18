@@ -910,6 +910,70 @@ paths:
                       name: "Tom"
                       message: "Hello"
 
+  /form-submit:
+    post:
+      tags: [Sample]
+      summary: Submit a form
+      description: Receive form data and echo back.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/FormSubmitRequest"
+            examples:
+              sample:
+                value:
+                  name: "Alice"
+                  email: "alice@mail.com"
+      responses:
+        "200":
+          description: Form received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FormSubmitResponse"
+              examples:
+                sample:
+                  value:
+                    status: "ok"
+                    received:
+                      name: "Alice"
+                      email: "alice@mail.com"
+
+  /feedback:
+    post:
+      tags: [Practice]
+      summary: Submit feedback
+      description: Receive feedback form data and echo back.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/FeedbackRequest"
+            examples:
+              sample:
+                value:
+                  name: "Amy"
+                  email: "amy@mail.com"
+                  message: "Great course!"
+      responses:
+        "200":
+          description: Feedback received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeedbackResponse"
+              examples:
+                sample:
+                  value:
+                    status: "ok"
+                    received:
+                      name: "Amy"
+                      email: "amy@mail.com"
+                      message: "Great course!"
+
   /items/{id}:
     put:
       tags: [Items]
@@ -1254,6 +1318,58 @@ components:
             message:
               type: string
           required: [name, message]
+      required: [status, received]
+
+    FormSubmitRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+      required: [name, email]
+
+    FormSubmitResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        received:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+          required: [name, email]
+      required: [status, received]
+
+    FeedbackRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        message:
+          type: string
+      required: [name, email, message]
+
+    FeedbackResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        received:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+            message:
+              type: string
+          required: [name, email, message]
       required: [status, received]
 
     ItemRequest:
