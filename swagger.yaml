@@ -23,6 +23,10 @@ tags:
     description: Practice endpoints (student exercises)
   - name: Notes
     description: Notes demo APIs
+  - name: Items
+    description: Item management APIs
+  - name: Movies
+    description: Movie watchlist APIs
   - name: Task API
     description: Lab assignment - Task Management APIs
   - name: External API
@@ -351,6 +355,70 @@ paths:
                 notFound:
                   value: { error: "Task not found" }
 
+    put:
+      tags: [Task API]
+      summary: Update task by ID
+      description: Update an existing task using JSON body.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdateRequest"
+            examples:
+              sample:
+                value: { title: "Study Flask", completed: true }
+      responses:
+        "200":
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              examples:
+                updated:
+                  value: { id: 1, title: "Study Flask", completed: true }
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notFound:
+                  value: { error: "Task not found" }
+
+    delete:
+      tags: [Task API]
+      summary: Delete task by ID
+      description: Delete an existing task.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        "204":
+          description: Task deleted successfully
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notFound:
+                  value: { error: "Task not found" }
+
   # -------------------------
   # External public APIs (for fetch demos)
   # -------------------------
@@ -532,6 +600,138 @@ paths:
                 notFound:
                   value: { error: "not found" }
 
+  /movies:
+    post:
+      tags: [Movies]
+      summary: Create a movie
+      description: Create a movie and return its ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MovieRequest"
+            examples:
+              sample:
+                value:
+                  title: "Inception"
+                  year: 2010
+      responses:
+        "201":
+          description: Movie created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movie"
+              examples:
+                sample:
+                  value:
+                    id: 1
+                    title: "Inception"
+                    year: 2010
+
+  /movies/{id}:
+    get:
+      tags: [Movies]
+      summary: Get a movie by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        "200":
+          description: Movie found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movie"
+              examples:
+                sample:
+                  value:
+                    id: 1
+                    title: "Inception"
+                    year: 2010
+        "404":
+          description: Movie not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notFound:
+                  value: { error: "not found" }
+
+    put:
+      tags: [Movies]
+      summary: Replace a movie
+      description: Replace a movie's title and year.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MovieRequest"
+            examples:
+              sample:
+                value:
+                  title: "Interstellar"
+                  year: 2014
+      responses:
+        "200":
+          description: Movie updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movie"
+              examples:
+                sample:
+                  value:
+                    id: 1
+                    title: "Interstellar"
+                    year: 2014
+        "404":
+          description: Movie not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notFound:
+                  value: { error: "not found" }
+
+    delete:
+      tags: [Movies]
+      summary: Delete a movie
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        "204":
+          description: Movie deleted
+        "404":
+          description: Movie not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notFound:
+                  value: { error: "not found" }
+
   /message:
     post:
       tags: [Sample]
@@ -562,10 +762,12 @@ paths:
                     received:
                       name: "Tom"
                       message: "Hello"
+
+  /items/{id}:
     put:
-      tags: [Task API]
-      summary: Update task by ID
-      description: Update an existing task using JSON body.
+      tags: [Items]
+      summary: Replace an item
+      description: Replace an item with a new name.
       parameters:
         - name: id
           in: path
@@ -578,33 +780,71 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskUpdateRequest"
+              $ref: "#/components/schemas/ItemRequest"
             examples:
               sample:
-                value: { title: "Study Flask", completed: true }
+                value:
+                  name: "Pencil"
       responses:
         "200":
-          description: Task updated successfully
+          description: Item replaced
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
+                $ref: "#/components/schemas/Item"
               examples:
-                updated:
-                  value: { id: 1, title: "Study Flask", completed: true }
+                sample:
+                  value:
+                    id: 1
+                    name: "Pencil"
+
+    patch:
+      tags: [Items]
+      summary: Update an item
+      description: Partially update an item.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemRequest"
+            examples:
+              sample:
+                value:
+                  name: "Pencil"
+      responses:
+        "200":
+          description: Item updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+              examples:
+                sample:
+                  value:
+                    id: 1
+                    name: "Pencil"
         "404":
-          description: Task not found
+          description: Item not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
               examples:
                 notFound:
-                  value: { error: "Task not found" }
+                  value: { error: "not found" }
+
     delete:
-      tags: [Task API]
-      summary: Delete task by ID
-      description: Delete an existing task.
+      tags: [Items]
+      summary: Delete an item
+      description: Delete an item by ID.
       parameters:
         - name: id
           in: path
@@ -614,17 +854,16 @@ paths:
           example: 1
       responses:
         "204":
-          description: Task deleted successfully
+          description: Item deleted
         "404":
-          description: Task not found
+          description: Item not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
               examples:
                 notFound:
-                  value: { error: "Task not found" }
-
+                  value: { error: "not found" }
 components:
   schemas:
 
@@ -826,6 +1065,26 @@ components:
           type: string
       required: [id, content]
 
+    MovieRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        year:
+          type: integer
+      required: [title, year]
+
+    Movie:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        year:
+          type: integer
+      required: [id, title, year]
+
     MessageRequest:
       type: object
       properties:
@@ -849,6 +1108,22 @@ components:
               type: string
           required: [name, message]
       required: [status, received]
+
+    ItemRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required: [name]
+
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      required: [id, name]
     # -------- Practice schemas --------
     VersionCheckResponse:
       type: object
