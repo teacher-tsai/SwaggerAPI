@@ -27,6 +27,8 @@ tags:
     description: Item management APIs
   - name: Movies
     description: Movie watchlist APIs
+  - name: Tasks V2
+    description: Advanced task management APIs
   - name: Task API
     description: Lab assignment - Task Management APIs
   - name: External API
@@ -418,6 +420,151 @@ paths:
               examples:
                 notFound:
                   value: { error: "Task not found" }
+
+  /v2/tasks:
+    get:
+      tags: [Tasks V2]
+      summary: Get tasks (with filter)
+      description: Return tasks, optionally filtered by completion status.
+      parameters:
+        - name: completed
+          in: query
+          required: false
+          schema:
+            type: boolean
+          example: true
+      responses:
+        "200":
+          description: Task list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskListResponse"
+              examples:
+                sample:
+                  value:
+                    total: 2
+                    tasks:
+                      - { id: 1, title: "Study Flask", completed: false }
+                      - { id: 2, title: "Build API Spec", completed: true }
+
+    post:
+      tags: [Tasks V2]
+      summary: Create a task
+      description: Add a new task using JSON body.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskCreateRequest"
+            examples:
+              sample:
+                value: { title: "Write Lab 01" }
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              examples:
+                created:
+                  value: { id: 3, title: "Write Lab 01", completed: false }
+
+  /v2/tasks/{id}:
+    put:
+      tags: [Tasks V2]
+      summary: Update task status
+      description: Update task completion status.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskStatusRequest"
+            examples:
+              sample:
+                value: { completed: true }
+      responses:
+        "200":
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskUpdateResponse"
+              examples:
+                updated:
+                  value:
+                    message: "Task updated"
+                    task: { id: 1, title: "Study Flask", completed: true }
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notFound:
+                  value: { error: "Task not found" }
+
+    delete:
+      tags: [Tasks V2]
+      summary: Delete task
+      description: Delete task by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        "200":
+          description: Task deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskDeleteResponse"
+              examples:
+                deleted:
+                  value: { message: "Task deleted" }
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notFound:
+                  value: { error: "Task not found" }
+
+  /v2/tasks/stats:
+    get:
+      tags: [Tasks V2]
+      summary: Get task statistics
+      description: Return task completion statistics.
+      responses:
+        "200":
+          description: Stats result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskStatsResponse"
+              examples:
+                sample:
+                  value:
+                    total: 5
+                    completed: 3
+                    pending: 2
+                    completion_rate: 60
 
   # -------------------------
   # External public APIs (for fetch demos)
@@ -1152,6 +1299,46 @@ components:
           type: boolean
       required: [id, title, completed]
 
+    TaskListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+      required: [total, tasks]
+
+    TaskUpdateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        task:
+          $ref: "#/components/schemas/Task"
+      required: [message, task]
+
+    TaskDeleteResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+
+    TaskStatsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        completed:
+          type: integer
+        pending:
+          type: integer
+        completion_rate:
+          type: integer
+      required: [total, completed, pending, completion_rate]
+
     TaskCreateRequest:
       type: object
       properties:
@@ -1165,6 +1352,13 @@ components:
           type: string
         completed:
           type: boolean
+
+    TaskStatusRequest:
+      type: object
+      properties:
+        completed:
+          type: boolean
+      required: [completed]
 
     ErrorResponse:
       type: object
