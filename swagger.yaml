@@ -21,6 +21,8 @@ tags:
     description: Sample endpoints (teacher demo)
   - name: Practice
     description: Practice endpoints (student exercises)
+  - name: Notes
+    description: Notes demo APIs
   - name: Task API
     description: Lab assignment - Task Management APIs
   - name: External API
@@ -416,7 +418,7 @@ paths:
     get:
       tags: [External API]
       summary: Predict age by name (Agify)
-      description: Public API used for name-to-age demo.
+      description: Public API used for practice-235 (name-to-age).
       parameters:
         - name: name
           in: query
@@ -437,6 +439,129 @@ paths:
                     name: "tom"
                     age: 57
                     count: 123456
+
+  /rating:
+    post:
+      tags: [Practice]
+      summary: Submit product rating
+      description: Receive a product rating (1-5) and echo back.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RatingRequest"
+            examples:
+              sample:
+                value:
+                  product: "咖啡"
+                  score: 5
+      responses:
+        "200":
+          description: Rating received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RatingResponse"
+              examples:
+                sample:
+                  value:
+                    status: "ok"
+                    received:
+                      product: "咖啡"
+                      score: 5
+
+  /notes:
+    post:
+      tags: [Notes]
+      summary: Create a note
+      description: Create a simple note and return its ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteRequest"
+            examples:
+              sample:
+                value:
+                  content: "買牛奶"
+      responses:
+        "201":
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+              examples:
+                sample:
+                  value:
+                    id: 1
+                    content: "買牛奶"
+
+  /notes/{id}:
+    get:
+      tags: [Notes]
+      summary: Get a note by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        "200":
+          description: Note found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+              examples:
+                sample:
+                  value:
+                    id: 1
+                    content: "買牛奶"
+        "404":
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notFound:
+                  value: { error: "not found" }
+
+  /message:
+    post:
+      tags: [Sample]
+      summary: Create a message
+      description: Receive a name and message and echo back.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageRequest"
+            examples:
+              sample:
+                value:
+                  name: "Tom"
+                  message: "Hello"
+      responses:
+        "200":
+          description: Message received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+              examples:
+                sample:
+                  value:
+                    status: "ok"
+                    received:
+                      name: "Tom"
+                      message: "Hello"
     put:
       tags: [Task API]
       summary: Update task by ID
@@ -660,6 +785,70 @@ components:
           type: integer
           nullable: true
       required: [name, age, count]
+
+    RatingRequest:
+      type: object
+      properties:
+        product:
+          type: string
+        score:
+          type: integer
+      required: [product, score]
+
+    RatingResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        received:
+          type: object
+          properties:
+            product:
+              type: string
+            score:
+              type: integer
+          required: [product, score]
+      required: [status, received]
+
+    NoteRequest:
+      type: object
+      properties:
+        content:
+          type: string
+      required: [content]
+
+    Note:
+      type: object
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+      required: [id, content]
+
+    MessageRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        message:
+          type: string
+      required: [name, message]
+
+    MessageResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        received:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+          required: [name, message]
+      required: [status, received]
     # -------- Practice schemas --------
     VersionCheckResponse:
       type: object
