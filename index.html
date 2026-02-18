@@ -15,11 +15,7 @@
   <script>
     window.onload = () => {
       SwaggerUIBundle({
-        urls: [
-          { url: "./swagger.yaml", name: "Local API" },
-          { url: "./swagger_external.yaml", name: "External API" }
-        ],
-        "urls.primaryName": "Local API",
+        url: "./swagger.yaml",
         dom_id: "#swagger-ui",
         deepLinking: true,
         persistAuthorization: true
