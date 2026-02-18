@@ -15,7 +15,11 @@
   <script>
     window.onload = () => {
       SwaggerUIBundle({
-        url: "./swagger.yaml",   // 你的 spec 檔
+        urls: [
+          { url: "./swagger.yaml", name: "Local API" },
+          { url: "./swagger_external.yaml", name: "External API" }
+        ],
+        "urls.primaryName": "Local API",
         dom_id: "#swagger-ui",
         deepLinking: true,
         persistAuthorization: true

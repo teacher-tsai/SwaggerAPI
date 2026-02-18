@@ -1,0 +1,157 @@
+openapi: 3.0.3
+
+info:
+  title: External Public APIs (Fetch Demos)
+  version: 1.0.0
+  description: |
+    Public API specification used in front-end fetch demos.
+    Use Swagger UI to read and try requests.
+
+servers:
+  - url: https://jsonplaceholder.typicode.com
+    description: JSONPlaceholder public API
+  - url: https://api.agify.io
+    description: Agify public API
+
+tags:
+  - name: External API
+    description: Public APIs used in front-end fetch demos
+
+paths:
+
+  /todos/{id}:
+    get:
+      tags: [External API]
+      summary: Get a todo (JSONPlaceholder)
+      description: Public test API used for GET demo.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        "200":
+          description: Todo item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JsonPlaceholderTodo"
+              examples:
+                sample:
+                  value:
+                    userId: 1
+                    id: 1
+                    title: "delectus aut autem"
+                    completed: false
+
+  /posts:
+    post:
+      tags: [External API]
+      summary: Create a post (JSONPlaceholder)
+      description: Public test API used for POST demo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JsonPlaceholderPostRequest"
+            examples:
+              sample:
+                value:
+                  title: "Hello"
+                  body: "Practice"
+                  userId: 1
+      responses:
+        "201":
+          description: Post created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JsonPlaceholderPostResponse"
+              examples:
+                sample:
+                  value:
+                    id: 101
+                    title: "Hello"
+                    body: "Practice"
+                    userId: 1
+
+  /:
+    get:
+      tags: [External API]
+      summary: Predict age by name (Agify)
+      description: Public API used for name-to-age demo.
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+          example: tom
+      responses:
+        "200":
+          description: Age prediction result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgifyResponse"
+              examples:
+                sample:
+                  value:
+                    name: "tom"
+                    age: 57
+                    count: 123456
+
+components:
+  schemas:
+    JsonPlaceholderTodo:
+      type: object
+      properties:
+        userId:
+          type: integer
+        id:
+          type: integer
+        title:
+          type: string
+        completed:
+          type: boolean
+      required: [userId, id, title, completed]
+
+    JsonPlaceholderPostRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        userId:
+          type: integer
+      required: [title, body, userId]
+
+    JsonPlaceholderPostResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+        userId:
+          type: integer
+      required: [id, title, body, userId]
+
+    AgifyResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        age:
+          type: integer
+          nullable: true
+        count:
+          type: integer
+          nullable: true
+      required: [name, age, count]

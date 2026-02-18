@@ -7,6 +7,7 @@ info:
     Course API specification for samples and practices.
     Use Swagger UI to read and try requests.
     Includes: Samples / Practice / Task Lab.
+    External public APIs are documented in: swagger_external.yaml
 
 servers:
   - url: http://127.0.0.1:5000
